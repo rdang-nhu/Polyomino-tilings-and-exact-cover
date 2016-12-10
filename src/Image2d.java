@@ -9,14 +9,14 @@ public class Image2d {
 	private int width; // width of the image
 	private int height; // height of the image
 	private java.util.List<ColoredPolygon> coloredPolygons; // colored polygons in the image
-	private java.util.List<Edge> edges; // edges to add to separate polygons
+//	private java.util.List<Edge> edges; // edges to add to separate polygons
 
 	// Constructor that instantiates an image of a specified width and height
 	public Image2d(int width, int height) {
 		this.width = width;
 		this.height = height;
 		coloredPolygons = Collections.synchronizedList(new LinkedList<ColoredPolygon>());
-		edges = Collections.synchronizedList(new LinkedList<Edge>());
+//		edges = Collections.synchronizedList(new LinkedList<Edge>());
 	}
 
 	// Return the width of the image
@@ -35,9 +35,9 @@ public class Image2d {
 	}
 
 	// Return the edges of the image
-	public java.util.List<Edge> getEdges() {
-		return edges;
-	}
+//	public java.util.List<Edge> getEdges() {
+//		return edges;
+//	}
 
 	// Create the polygon with xcoords, ycoords and color 
 	public void addPolygon(int[] xcoords, int[] ycoords, Color color) {
@@ -45,14 +45,14 @@ public class Image2d {
 	}
 	
 	// Create the edge with coordinates x1, y1, x2, y2
-	public void addEdge(int x1, int y1, int x2, int y2, int width) {
-		edges.add(new Edge(x1, y1, x2, y2, width));
-	}
+//	public void addEdge(int x1, int y1, int x2, int y2, int width) {
+//		edges.add(new Edge(x1, y1, x2, y2, width));
+//	}
 	
 	// Clear the picture
 	public void clear() {
 		coloredPolygons = Collections.synchronizedList(new LinkedList<ColoredPolygon>());
-		edges = Collections.synchronizedList(new LinkedList<Edge>());		
+//		edges = Collections.synchronizedList(new LinkedList<Edge>());		
 	}
 }
 
@@ -86,12 +86,12 @@ class Image2dComponent extends JComponent {
 		
 		// draw the edges
 		g2.setColor(Color.white);
-		synchronized (img.getEdges()) {
-			for (Edge edge : img.getEdges()) {
-                g2.setStroke(new BasicStroke(edge.width));
-                g2.drawLine(edge.x1, edge.y1, edge.x2, edge.y2);
-			}
-		}
+//		synchronized (img.getEdges()) {
+//			for (Edge edge : img.getEdges()) {
+//                g2.setStroke(new BasicStroke(edge.width));
+//                g2.drawLine(edge.x1, edge.y1, edge.x2, edge.y2);
+//			}
+//		}
 	}
 }
 
