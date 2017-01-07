@@ -67,19 +67,32 @@ public class PolyominoTilings {
      		System.out.println("}");
     	}
     }
-
+    
 	public static void main(String[] args){
 		Polyomino p = new Polyomino("(0,0),(0,1),(0,2),(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)");
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		PolyominoList l = PolyominoList.fixedPolyomino(3);
 		ColumnObject H = fixedPolyominoTilings(p,l);
 		ArrayList<PolyominoList> toPrint = allTilings(H);
-		PolyominoList pl = toPrint.get(0);
-		Polyomino pol = pl.get(0);
-		System.out.print(pol.toString());
-		//pl.draw(5, 10);
-		//System.out.print(p);
-		//System.out.print(l);
+		
+		//On dessine tous les tilings
+		Image2d img = new Image2d(1300,500); 
+		
+		// Pour chaque tiling
+		for(int i = 0; i < toPrint.size(); i++){
+			PolyominoList pl = toPrint.get(i);
+			for(int j = 0; j < pl.size(); j++){
+				// On translate tous les polyominos du tiling
+				pl.get(j).translater(5*i,0);
+			}
+			
+			pl.draw_aux(0, 20, img);
+			
+			
+		}
+		new Image2dComponent(img);
+		new Image2dViewer(img);
+		
 		ArrayList<ArrayList<String>> res = DancingLinks.exactCover(H);
 		
 		int j = 1;

@@ -27,16 +27,10 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 	PolyominoList(){
 		super();
 	}
-	
-	
-	public void draw(int taille, int g){
-		Random c = new Random();
-		Image2d img = new Image2d(1300,500); 
-		
-		
+	public void draw_aux(int taille, int g, Image2d img){
 		for(int i = 0; i < this.size(); i++){
 			// Pour chaque Polyomino de la liste
-
+			Random c = new Random();
 			Polyomino a = this.get(i);
 			a.translater(taille+(g*taille*i)%1250/g, taille+taille*(g*taille*i/1250));
 			
@@ -56,6 +50,17 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 				img.addPolygon(xc, yc, couleur);
 			}
 		}
+	}
+	
+	public void draw(int taille, int g){ 
+		// L'argument taille est l'écart entre les polyominos
+		// g est le facteur de dilatation
+		// début est la case à partir de laquelle on commence
+		
+		Image2d img = new Image2d(1300,500); 
+		
+		draw_aux(taille, g, img);
+		
 		new Image2dComponent(img);
 		new Image2dViewer(img);
 	}
