@@ -3,7 +3,9 @@ import java.io.FileReader;
 import java.awt.Color;
 import java.io.BufferedReader;
 
-public class PolyominoList extends LinkedList<Polyomino>{ //ne gère pas les exceptions en cas de non-lecture du fichier
+public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les exceptions en cas de non-lecture du fichier
+	static int[] caseUtile = {0,0};
+	
 	PolyominoList(String nom){
 		super();
 		try
@@ -14,7 +16,7 @@ public class PolyominoList extends LinkedList<Polyomino>{ //ne gère pas les exce
 			String line = br.readLine();
 			while(line != null){
 				Polyomino p = new Polyomino(line);
-				this.addLast(p);
+				this.add(p);
 				line = br.readLine();
 			}
 			br.close();
@@ -27,20 +29,31 @@ public class PolyominoList extends LinkedList<Polyomino>{ //ne gère pas les exce
 	}
 	
 	
-	public void draw(){
-		Image2d img = new Image2d(1000,500); //régler le paramétrage auto
+	public void draw(int taille, int g){
+		Random c = new Random();
+		Image2d img = new Image2d(1300,500); 
+		
 		
 		for(int i = 0; i < this.size(); i++){
+			// Pour chaque Polyomino de la liste
+
 			Polyomino a = this.get(i);
-			for(int j = 0; j < a.liste.size(); j++){
-				int[] carré = a.liste.get(j);//on récupère tous les polygones et on les dessine de la même couleur
+			a.translater(taille+(g*taille*i)%1250/g, taille+taille*(g*taille*i/1250));
+			
+			
+			Color couleur = Color.getHSBColor(c.nextFloat() ,1,1);
+					
+			
+			for(int j = 0; j < a.cases.size(); j++){
+				//on récupère tous les carrés et on les dessine de cette couleur
+				int[] carré = a.cases.get(j);
 				int x = carré[0];
 				int y = carré[1];
-				int x1 = 10*x;  
-				int y1 = 200-10*y;
-				int[] xc = {x1,x1,x1+10,x1+10};
-				int[] yc = {y1,y1+10,y1+10,y1};
-				img.addPolygon(xc, yc, Color.red);
+				int x1 = g * x;  
+				int y1 = g * y;
+				int[] xc = {x1,x1,x1+g,x1+g};
+				int[] yc = {y1,y1+g,y1+g,y1};
+				img.addPolygon(xc, yc, couleur);
 			}
 		}
 		new Image2dComponent(img);
@@ -58,64 +71,101 @@ public class PolyominoList extends LinkedList<Polyomino>{ //ne gère pas les exce
 		return s;		
 	}
 	
-	public static PolyominoList fixedPolyomino(int area, LinkedList<int[]> c_vois){
-		PolyominoList resultat = new PolyominoList();
-		if (area == 1){
-			Polyomino e = new Polyomino("(0,0)");
-			resultat.addFirst(e);
+	public static PolyominoList fixedPolyomino(int area){
+		if(area == 1){
+			PolyominoList resultat = new PolyominoList();
+			Polyomino a = new Polyomino();
+			int[] case1 = {0,0};
+			int[] case2 = {0,1};
+			int[] case3 = {1,0};
+			int[] case4 = {-1,0};
+			int[] case5 = {0,-1};
+			a.cases.add(case1);
+			a.casesVoisines.add(case2);
+			a.casesVoisines.add(case3);
+			a.casesVoisines.add(case4);
+			a.casesVoisines.add(case5);
+			resultat.add(a);
 			return resultat;
 		}
-		
-		for(int i = 0; i < c_vois.size(); i++){
-			int[] Pcase = c_vois.get(i);
-			LinkedList<int[]> c_vois_aux = new LinkedList<int[]>(c_vois);
-			int x = Pcase[0];
-			int y = Pcase[1];
-			int[] voisin1 = {x+1,y};
-			int[] voisin2 = {x,y+1};
-			int[] voisin3 = {x-1,y};
-			int[] voisin4 = {x,y-1};
-			c_vois_aux.add(voisin1);
-			c_vois_aux.add(voisin2);
-			c_vois_aux.add(voisin3);
-			c_vois_aux.add(voisin4);
-			
-			
-			for(int j = 0; j < c_vois_aux.size(); j++){
-				int[] aux = c_vois_aux.get(j);
-				if(aux == Pcase){
-					c_vois_aux.remove(i);
+
+		PolyominoList resultat = new PolyominoList();
+		PolyominoList rec = fixedPolyomino(area-1);
+		for(int i = 0; i < rec.size(); i++){
+			Polyomino p = rec.get(i);
+			for(int j = 0; j < p.casesVoisines.size(); j++){
+				
+				// On copie p
+				Polyomino a = Polyomino.copy(p);
+				// on ajoute la case voisine choisie
+				a.cases.add(p.casesVoisines.get(j));
+				
+				//On enlève la case voisine indexée par j
+				a.casesVoisines.remove(j);
+				
+				// On ajoute les nouvelles cases voisines, en évitant de prendre une case déjà occupée
+				int x = p.casesVoisines.get(j)[0];
+				int y = p.casesVoisines.get(j)[1];
+				int[] v1 = {x+1,y};
+				int[] v2 = {x,y+1};
+				int[] v3 = {x-1,y};
+				int[] v4 = {x,y-1};
+				
+				if(! a.contains(v1, caseUtile) && ! a.vContains(v1)){
+					a.casesVoisines.add(v1);
+				}
+				if(! a.contains(v2, caseUtile) && ! a.vContains(v2)){
+					a.casesVoisines.add(v2);
+				}
+				if(! a.contains(v3, caseUtile) && ! a.vContains(v3)){
+					a.casesVoisines.add(v3);
+				}
+				if(! a.contains(v4, caseUtile) && ! a.vContains(v4)){
+					a.casesVoisines.add(v4);
+				}
+				
+				// on vérifie que res ne contient pas déjà le polyomino
+				boolean verif = true;
+				for(int l = 0; l < resultat.size(); l++){
+					if(a.isEqualFixed(resultat.get(l))){
+						verif = false;
+					}
+				}
+				if(verif == true) resultat.add(a);
+			}
+		}
+	return resultat;
+	
+}
+	public static PolyominoList freePolyomino(int area){
+		PolyominoList resultat = fixedPolyomino(area);
+		for(int l = 0; l < resultat.size(); l++){
+			Polyomino test = resultat.get(l);
+			for(int k = l+1; k < resultat.size();){
+				if(test.isEqualFree(resultat.get(k))){
+					resultat.remove(k);
+				}
+				else{
+					k = k+1;
 				}
 			}
-			
-			PolyominoList resultat_aux = fixedPolyomino(area-1, c_vois_aux);
-			for(int k = 0; k < resultat_aux.size(); k++){
-				Polyomino p = resultat_aux.get(k);
-				p.liste.add(Pcase);
-			}
-			resultat.addAll(resultat_aux);
 		}
-		return resultat;
-	}
+		
+	return resultat;
 	
+}
 	public static void test1(){
 		PolyominoList test = new PolyominoList("src/polyominoesINF421.txt");
-		for(int i = 0; i < test.size(); i++){
-			Polyomino p = test.get(i);
-			p.translater(5*i, 0);
-		}
-		test.draw();
+		test.draw(5,10);
 	}
+
 	
 	public static void main(String[] args){
-		//test1();
-		int[] a1 = {0,1};
-		int[] a2 = {1,0};
-		LinkedList<int[]> b = new LinkedList<int[]>();
-		b.add(a1);
-		b.add(a2);
-		PolyominoList test2 = fixedPolyomino(3,b);
-		System.out.print(test2);
+		test1();
+		//PolyominoList resultat = fixedPolyomino(3);
+		
+
+		//resultat.draw(10, 5);
 		
 	}
 }
