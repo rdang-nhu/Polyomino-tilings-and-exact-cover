@@ -1,9 +1,17 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+
 
 
 public class DancingLinks {
+	static Charset utf8 = StandardCharsets.UTF_8;
 	
 	ColumnObject H;
 	
@@ -204,7 +212,9 @@ public class DancingLinks {
 				String t_set = "[" + x.N;
 				for(DataObject y = t.L; y != t; y = y.L){
 					coverColumn(y.C);
-					t_set = t_set + ", " + y.C.N;
+					if(!(y.C.N.equals("control_key"))){
+						t_set = t_set + ", " + y.C.N;
+					}
 				}
 				for (ArrayList<String> eC : exactCover(H)){
 					eC.add(t_set + "]");
@@ -220,6 +230,60 @@ public class DancingLinks {
 		}
 
 	}
+	
+	public static void exactCover_write(ColumnObject H){
+		
+		int j = 0;
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
+		{
+			
+		//Sélection de la colonne avec x.S minimal
+		ColumnObject x = (ColumnObject)H.R;
+		int counter = 0;
+		for(ColumnObject c_pointer = x; c_pointer != H; c_pointer = (ColumnObject)c_pointer.R){
+			if(c_pointer.S > counter){
+				x = c_pointer;
+				counter = c_pointer.S;
+			}
+		}
+		
+		coverColumn(x);
+		
+		for(DataObject t = x.U; t != x; t = t.U){
+			String t_set = "[" + x.N;
+			for(DataObject y = t.L; y != t; y = y.L){
+				coverColumn(y.C);
+				if(!(y.C.N.equals("control_key"))){
+					t_set = t_set + ", " + y.C.N;
+				}
+			}
+			for (ArrayList<String> eC : exactCover(H)){
+				j += 1;
+				if(j%10000 ==0){
+				System.out.println(j);
+				bw.write(j + " : ");
+				for(int v = 0; v<eC.size();v++){
+					bw.write(eC.get(v));
+				}
+				bw.write(t_set + "]"); 
+				bw.newLine();
+						
+					}}
+			for(DataObject y = t.R; y != t; y = y.R){
+				uncoverColumn(y.C);
+			}
+		}
+		uncoverColumn(x);
+		
+	}
+		catch (IOException e) {
+
+			e.printStackTrace();
+		
+		}
+
+	}
+	
 	
 	
 	public static void test1(){
@@ -242,19 +306,32 @@ public class DancingLinks {
 	}
 	
 		public static void test2(int n){
+
 			int[][] A = MatrixSet.allSubsets(n);
+			System.out.println(A.length);
 			ColumnObject H = eC2dL(A);
 			System.out.println(Arrays.deepToString(A));
-			ArrayList<ArrayList<String>> res = exactCover(H);
-			int j = 1;
-			for (List<String> s : res){
-				System.out.println(" ");
-				System.out.print("newcover number " +j +" composed of sets ");
-				for(String i : s){
-					System.out.print(i + " ");
-				}
-				j++;
-			}
+			exactCover_write(H);
+//			int j = 0;
+//			try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
+//			{for (List<String> s : res){
+//				if(j%100 == 0){
+//					bw.write(j + " : ");
+//					for(String i : s){
+//						bw.write(i); ;
+//						}
+//					bw.newLine();
+//					
+//					//if (j%100 == 0) System.out.println(j);
+//				}
+//				j += 1;
+//				}
+//			}
+//			catch (IOException e) {
+//
+//				e.printStackTrace();
+//			
+//			}
 		}
 		
 		public static void test3(int n, int k){
@@ -273,10 +350,26 @@ public class DancingLinks {
 			}
 		}
 	
+		static void test2polyomino(int n, int k){
+	    	Polyomino p = new Polyomino();
+	    	for(int i = 0; i < n; i++){
+	    		for(int j = 0; j < n; j++){
+	    			int[] a = {i,i/2+j};
+	    			p.cases.add(a);
+	    		}
+	    	}
+	    	
+			PolyominoList l = PolyominoList.fixedPolyomino(k);
+			PolyominoTilings toPrint = new PolyominoTilings(p,l);
+			
+			//toPrint.draw(10,10);
+	    }
 	public static void main(String[] args){
 		//test1();
-		//test2(11);
+		test2polyomino(8,4);
 		//test3(10,5);
 	}
+	
+	
 	
 }

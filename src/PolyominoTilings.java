@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -9,14 +12,36 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     PolyominoTilings(Polyomino p, PolyominoList l){
     	super();
     	this.H = fixedPolyominoTilings(p,l);
-		this.res = DancingLinks.exactCover(H);
-		for (List<String> s : res){
-			PolyominoList pl = new PolyominoList();
-			for(String i : s){
-				pl.add(new Polyomino(i));
-			}
-			this.add(pl);
-		}
+    	//System.out.println(((ColumnObject)H.R).S);
+    	System.out.println("DancingLinks problème identifié");
+		//this.res = DancingLinks.exactCover(H);
+    	DancingLinks.exactCover_write(H);
+		
+//		int j = 0;
+//		try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
+//		{for (List<String> s : res){
+//			bw.write("La " + j + " ème couverture composée des ensembles : ");
+//			for(String i : s){
+//				bw.write(i); ;
+//				}
+//			bw.newLine();
+//			j += 1;
+//			//if (j%100 == 0) System.out.println(j);
+//		}
+//		}
+//		catch (IOException e) {
+//
+//			e.printStackTrace();
+//		
+//		}
+//		
+//		for (List<String> s : res){
+//			PolyominoList pl = new PolyominoList();
+//			for(String i : s){
+//				pl.add(new Polyomino(i));
+//			}
+//			this.add(pl);
+//		}
     }
     
 	public static ColumnObject fixedPolyominoTilings(Polyomino p, PolyominoList l){
@@ -52,12 +77,15 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 		
 		//Conversion de l'ArrayList<int[]> en int[][], format utilisé pour le problème de couverture exacte
 		int[][] cM = Utils.convertA2M(matriceCouv);
+
 		
 		//On crée l'objet associé au problème de couverture exacte
 		ColumnObject H = DancingLinks.eC2dL(cM, name);
 		
 		return H;
 	}
+	
+	
 	
 
     public static void print(ArrayList<int[]> matriceCouv){
@@ -113,22 +141,78 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 		toPrint.draw(10,5);
     }
     
-    static void test2(){
+    static void test2(int n, int k){
     	Polyomino p = new Polyomino();
-    	for(int i = 0; i < 5; i++){
-    		for(int j = 0; j < 5; j++){
+    	for(int i = 0; i < n; i++){
+    		for(int j = 0; j < n; j++){
     			int[] a = {i,i/2+j};
     			p.cases.add(a);
     		}
     	}
     	
-		PolyominoList l = PolyominoList.fixedPolyomino(5);
+		PolyominoList l = PolyominoList.fixedPolyomino(k);
 		PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		toPrint.draw(10,10);
+		
+		//toPrint.draw(10,10);
     }
     
+    static void test3(int n){
+    	Polyomino p = new Polyomino();
+    	for(int i = 0; i < n; i++){
+    		for(int j = 0; j < n; j++){
+    			int[] a = {i,j};
+    			p.cases.add(a);
+    		}
+    	}
+    	
+		PolyominoList l = PolyominoList.fixedPolyomino(3);
+		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//toPrint.draw(10,10);
+    }
+    
+    static void test4(int n, int k){
+    	Polyomino p = new Polyomino();
+    	for(int i = 0; i < n; i++){
+    		for(int j = 0; j < n; j++){
+    			if(j<2*(i+1) && i < n/2){
+	    			int[] a = {i,j};
+	    			p.cases.add(a);
+    			}
+    			else if(j < 2*(n-i) && i > n/2-1){
+    				int[] a = {i,j};
+	    			p.cases.add(a);
+    			}
+    		}
+    	}
+    	PolyominoList l = PolyominoList.fixedPolyomino(k);
+		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//toPrint.draw(10,10);
+    }
+    
+    static void test5(int n, int k){
+    	Polyomino p = new Polyomino();
+    	for(int i = 0; i < n; i++){
+    		for(int j = 0; j < n; j++){
+    			if(n/2 - i - 1 <= j && j <= n/2 + i && i < n/2){
+	    			int[] a = {i,j};
+	    			p.cases.add(a);
+    			}
+    			else if(j<= n-i+n/2 -1 && j >= Math.abs(n/2 - n + i) && i > n/2-1){
+    				int[] a = {i,j};
+	    			p.cases.add(a);
+    			}
+    		}
+    	}
+    	PolyominoList l = PolyominoList.fixedPolyomino(k);
+		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//toPrint.draw(10,10);
+    }
+    
+    
 	public static void main(String[] args){
-		test2();
+		//test2(5);
+		//test3(3);
+		test2(8,4);
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		
 	}
