@@ -18,7 +18,7 @@ public class MatrixSet {
 	}
 	
 	public static int[][] kSubsets(int n, int k){
-		int nsets = Binomial.binomial(n,k);
+		int nsets = Utils.binomial(n,k);
 		int [][] res = new int[nsets][n];
 		String s;
 		int line_pointer = 0;

@@ -231,10 +231,10 @@ public class DancingLinks {
 
 	}
 	
-	public static void exactCover_write(ColumnObject H){
+	public static void exactCover_write(ColumnObject H, String file){
 		
 		int j = 0;
-		try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter(file)))
 		{
 			
 		//Sélection de la colonne avec x.S minimal
@@ -284,6 +284,46 @@ public class DancingLinks {
 
 	}
 	
+	public static int exactCover_count(ColumnObject H){
+		
+		int res = 0;
+		
+		if(H.R == H){
+			return 0;
+		}
+		else{
+			
+			//Sélection de la colonne avec x.S minimal
+			ColumnObject x = (ColumnObject)H.R;
+			int counter = 0;
+			for(ColumnObject c_pointer = x; c_pointer != H; c_pointer = (ColumnObject)c_pointer.R){
+				if(c_pointer.S > counter){
+					x = c_pointer;
+					counter = c_pointer.S;
+				}
+			}
+			
+			coverColumn(x);
+			
+			for(DataObject t = x.U; t != x; t = t.U){
+				String t_set = "[" + x.N;
+				for(DataObject y = t.L; y != t; y = y.L){
+					coverColumn(y.C);
+					if(!(y.C.N.equals("control_key"))){
+						t_set = t_set + ", " + y.C.N;
+					}
+				}
+				res += exactCover(H).size();
+				for(DataObject y = t.R; y != t; y = y.R){
+					uncoverColumn(y.C);
+				}
+			}
+			uncoverColumn(x);
+			
+			return res;
+		}
+
+	}
 	
 	
 	public static void test1(){
@@ -311,27 +351,7 @@ public class DancingLinks {
 			System.out.println(A.length);
 			ColumnObject H = eC2dL(A);
 			System.out.println(Arrays.deepToString(A));
-			exactCover_write(H);
-//			int j = 0;
-//			try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
-//			{for (List<String> s : res){
-//				if(j%100 == 0){
-//					bw.write(j + " : ");
-//					for(String i : s){
-//						bw.write(i); ;
-//						}
-//					bw.newLine();
-//					
-//					//if (j%100 == 0) System.out.println(j);
-//				}
-//				j += 1;
-//				}
-//			}
-//			catch (IOException e) {
-//
-//				e.printStackTrace();
-//			
-//			}
+			exactCover_write(H, "file3.txt");
 		}
 		
 		public static void test3(int n, int k){
@@ -360,7 +380,7 @@ public class DancingLinks {
 	    	}
 	    	
 			PolyominoList l = PolyominoList.fixedPolyomino(k);
-			PolyominoTilings toPrint = new PolyominoTilings(p,l);
+			//PolyominoTilings toPrint = new PolyominoTilings(p,l);
 			
 			//toPrint.draw(10,10);
 	    }

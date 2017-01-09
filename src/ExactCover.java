@@ -16,14 +16,6 @@ public class ExactCover {
 		//On définit 2 files qui contiennent les éléments du tableau qui sont encore à explorer, et 2 compteurs qui les dénombres
 		int count_C = n;
 		int count_X = m;
-		//Queue<Integer> remain_C = new LinkedList<Integer>();
-		//Queue<Integer> remain_X = new LinkedList<Integer>();
-		//for(int i = 0; i < n; i++){
-		//	remain_C.add(i);
-		//}
-		//for(int j = 0; j < m; j++){
-		//	remain_X.add(j);
-		//}
 		
 		int[] remain_C = new int[n];
 		int[] remain_X = new int[m];
@@ -141,6 +133,7 @@ public class ExactCover {
 	}
 	
 	public static void main(String[] args){
+		System.out.println((false) ? 1 : 0);
 		//test1();
 		//test2(15);
 		//test3(4,2);

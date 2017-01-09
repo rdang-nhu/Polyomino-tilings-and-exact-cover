@@ -7,52 +7,59 @@ import java.util.*;
 public class PolyominoTilings extends ArrayList<PolyominoList>{
 	ColumnObject H;
 	ArrayList<ArrayList<String>> res;
+	int counter;
 	
 	
-    PolyominoTilings(Polyomino p, PolyominoList l){
+    PolyominoTilings(Polyomino p, PolyominoList l, String problem_type, String result_type){
+    	
+    	//problem_type définit le type de problème reusable : on réutilise au temps de fois qu'on veut le même polyomino, sans forcément tous les utiliser
+    	//										   all_once : on doit utiliser chaque polyomino une fois exactement
+    	//										   once : on ne peut utiliser qu'une seule fois un polyomino donné
+    	
+    	//result_type définit la forme du résultat renvoyé : print : affichage graphique des solutions
+    	//													 number : retourne le nombre de pavage
+    	//													 autre : on suppose que l'on veut enregistrer le résultat et que result_type indique le fichier
+    	
+    	
     	super();
-    	this.H = fixedPolyominoTilings(p,l);
-    	//System.out.println(((ColumnObject)H.R).S);
-    	System.out.println("DancingLinks problème identifié");
-		//this.res = DancingLinks.exactCover(H);
-    	DancingLinks.exactCover_write(H);
+    	
+		boolean not_reusable = (problem_type.equals("once") || problem_type.equals("all_once"));
+		boolean not_all  = problem_type.equals("once");
 		
-//		int j = 0;
-//		try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
-//		{for (List<String> s : res){
-//			bw.write("La " + j + " ème couverture composée des ensembles : ");
-//			for(String i : s){
-//				bw.write(i); ;
-//				}
-//			bw.newLine();
-//			j += 1;
-//			//if (j%100 == 0) System.out.println(j);
-//		}
-//		}
-//		catch (IOException e) {
-//
-//			e.printStackTrace();
-//		
-//		}
-//		
-//		for (List<String> s : res){
-//			PolyominoList pl = new PolyominoList();
-//			for(String i : s){
-//				pl.add(new Polyomino(i));
-//			}
-//			this.add(pl);
-//		}
+    	this.H = fixedPolyominoTilings(p,l,not_reusable, not_all);
+    	
+    	if (result_type == "print"){
+    		this.res = DancingLinks.exactCover(H);
+    		for (List<String> s : res){
+    			PolyominoList pl = new PolyominoList();
+    			for(String i : s){
+    				pl.add(new Polyomino(i));
+    			}
+    			this.add(pl);
+    		}
+    		this.draw(10,10);
+    	}
+    	else if (result_type == "number"){
+    		this.counter = DancingLinks.exactCover_count(H);
+    		System.out.println(this.counter);
+    	}
+    	else{
+    		DancingLinks.exactCover_write(H, result_type);
+    	}
     }
     
-	public static ColumnObject fixedPolyominoTilings(Polyomino p, PolyominoList l){
+	public static ColumnObject fixedPolyominoTilings(Polyomino p, PolyominoList l, boolean not_reusable, boolean not_all){
 		
 		// On suppose que tous les Polyominos de l ont leur case0 en {0,0}
 		// Comme on ne connaît pas le nombre de polyominos qui conviennent, on part sur une ArrayList
+		
+		//On calcul la matrice de couverture du problème
+		
 		ArrayList<int[]> matriceCouv = new ArrayList<int[]>();
 		for(int i = 0; i < l.size(); i++){
 			Polyomino test = l.get(i);
 			for(int j = 0; j < p.cases.size(); j++){
-				int[] ligne = new int[p.cases.size()];
+				int[] ligne = new int[p.cases.size() + ( not_reusable ? 1 : 0 ) * l.size()];
 				int[] caseTest = p.cases.get(j);
 				if(p.contains(test,caseTest)){
 					for(int k = 0; k < p.cases.size(); k++){
@@ -64,22 +71,34 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 						}
 						else ligne[k] = 0;
 					}
-					matriceCouv.add(ligne);
+					if (not_reusable){
+						ligne[i + p.cases.size()] = 1;
+					}
+					matriceCouv.add(ligne);	
 				}
+			}
+			if (not_all){
+				int[] ligne = new int[p.cases.size() + l.size()];
+				ligne[p.cases.size() + i]=1;
+				matriceCouv.add(ligne);
 			}
 		}
 		
 		//Création du tableau contenant le nom des colonnes
-		String[] name = new String[p.cases.size()];
+		String[] name = new String[p.cases.size() + ( not_reusable ? 1 : 0 ) * l.size()];
 		for (int i = 0; i < p.cases.size(); i++){
 			name[i] = Utils.CoordinateStandardization(Arrays.toString(p.cases.get(i)));
 		}
+		for (int i = p.cases.size(); i < p.cases.size() + ( not_reusable ? 1 : 0 )*l.size(); i++){
+			name[i] = "control_key";
+		}
+		
+
 		
 		//Conversion de l'ArrayList<int[]> en int[][], format utilisé pour le problème de couverture exacte
 		int[][] cM = Utils.convertA2M(matriceCouv);
-
 		
-		//On crée l'objet associé au problème de couverture exacte
+		//Création de l'objet associé au problème de couverture exacte
 		ColumnObject H = DancingLinks.eC2dL(cM, name);
 		
 		return H;
@@ -135,10 +154,9 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 
     static void test1(){
     	Polyomino p = new Polyomino("(0,0),(0,1),(0,2),(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)");
-		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		PolyominoList l = PolyominoList.fixedPolyomino(3);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		toPrint.draw(10,5);
+		PolyominoTilings toPrint = new PolyominoTilings(p,l,"once","number");
+		toPrint.draw(10,15);
     }
     
     static void test2(int n, int k){
@@ -151,7 +169,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     	}
     	
 		PolyominoList l = PolyominoList.fixedPolyomino(k);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
 		
 		//toPrint.draw(10,10);
     }
@@ -166,7 +184,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     	}
     	
 		PolyominoList l = PolyominoList.fixedPolyomino(3);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
 		//toPrint.draw(10,10);
     }
     
@@ -185,7 +203,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     		}
     	}
     	PolyominoList l = PolyominoList.fixedPolyomino(k);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
 		//toPrint.draw(10,10);
     }
     
@@ -204,15 +222,17 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     		}
     	}
     	PolyominoList l = PolyominoList.fixedPolyomino(k);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l);
+    	
+		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
 		//toPrint.draw(10,10);
     }
     
     
 	public static void main(String[] args){
+		test1();
 		//test2(5);
 		//test3(3);
-		test2(8,4);
+		//test2(8,4);
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		
 	}
