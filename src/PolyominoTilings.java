@@ -99,25 +99,11 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 		int[][] cM = Utils.convertA2M(matriceCouv);
 		
 		//Création de l'objet associé au problème de couverture exacte
-		ColumnObject H = DancingLinks.eC2dL(cM, name);
+		ColumnObject H = DancingLinks.cM2dL(cM, name);
 		
 		return H;
 	}
 	
-	
-	
-
-    public static void print(ArrayList<int[]> matriceCouv){
-    	for(int i = 0; i < matriceCouv.size(); i ++){
-    		int[] ligne = matriceCouv.get(i);
-    		System.out.print("{");
-     		for(int j = 0; j < ligne.length; j ++){
-     			System.out.print("("+ligne[j]+")");
-     		}
-     		System.out.println("}");
-    	}
-    }
-    
     
     // Passage en fonction de l'ensemble du problème
     
@@ -152,87 +138,8 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 
 	// Je passe la méthode en dynamique pour rester proche du paradigme objet, PolyominoTilings devient un constructeur
 
-    static void test1(){
-    	Polyomino p = new Polyomino("(0,0),(0,1),(0,2),(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)");
-		PolyominoList l = PolyominoList.fixedPolyomino(3);
-		PolyominoTilings toPrint = new PolyominoTilings(p,l,"once","number");
-		toPrint.draw(10,15);
-    }
-    
-    static void test2(int n, int k){
-    	Polyomino p = new Polyomino();
-    	for(int i = 0; i < n; i++){
-    		for(int j = 0; j < n; j++){
-    			int[] a = {i,i/2+j};
-    			p.cases.add(a);
-    		}
-    	}
-    	
-		PolyominoList l = PolyominoList.fixedPolyomino(k);
-		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		
-		//toPrint.draw(10,10);
-    }
-    
-    static void test3(int n){
-    	Polyomino p = new Polyomino();
-    	for(int i = 0; i < n; i++){
-    		for(int j = 0; j < n; j++){
-    			int[] a = {i,j};
-    			p.cases.add(a);
-    		}
-    	}
-    	
-		PolyominoList l = PolyominoList.fixedPolyomino(3);
-		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		//toPrint.draw(10,10);
-    }
-    
-    static void test4(int n, int k){
-    	Polyomino p = new Polyomino();
-    	for(int i = 0; i < n; i++){
-    		for(int j = 0; j < n; j++){
-    			if(j<2*(i+1) && i < n/2){
-	    			int[] a = {i,j};
-	    			p.cases.add(a);
-    			}
-    			else if(j < 2*(n-i) && i > n/2-1){
-    				int[] a = {i,j};
-	    			p.cases.add(a);
-    			}
-    		}
-    	}
-    	PolyominoList l = PolyominoList.fixedPolyomino(k);
-		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		//toPrint.draw(10,10);
-    }
-    
-    static void test5(int n, int k){
-    	Polyomino p = new Polyomino();
-    	for(int i = 0; i < n; i++){
-    		for(int j = 0; j < n; j++){
-    			if(n/2 - i - 1 <= j && j <= n/2 + i && i < n/2){
-	    			int[] a = {i,j};
-	    			p.cases.add(a);
-    			}
-    			else if(j<= n-i+n/2 -1 && j >= Math.abs(n/2 - n + i) && i > n/2-1){
-    				int[] a = {i,j};
-	    			p.cases.add(a);
-    			}
-    		}
-    	}
-    	PolyominoList l = PolyominoList.fixedPolyomino(k);
-    	
-		//PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		//toPrint.draw(10,10);
-    }
-    
     
 	public static void main(String[] args){
-		test1();
-		//test2(5);
-		//test3(3);
-		//test2(8,4);
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		
 	}

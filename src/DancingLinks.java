@@ -11,17 +11,11 @@ import java.nio.file.Paths;
 
 
 public class DancingLinks {
+	
 	static Charset utf8 = StandardCharsets.UTF_8;
 	
-	ColumnObject H;
 	
-	public DancingLinks(ColumnObject H){
-		this.H = H;
-	}
-	
-	
-	
-	public static ColumnObject eC2dL(int[][] cM){
+	public static ColumnObject cM2dL(int[][] cM){
 		
 		//Définition des dimensions du problème de couverture exacte
 		int n = cM.length;
@@ -91,7 +85,7 @@ public class DancingLinks {
 		return home;
 	}
 	
-	public static ColumnObject eC2dL(int[][] cM, String[] name){
+	public static ColumnObject cM2dL(int[][] cM, String[] name){
 		
 		//Définition des dimensions du problème de couverture exacte
 		int n = cM.length;
@@ -232,7 +226,7 @@ public class DancingLinks {
 	}
 	
 	public static void exactCover_write(ColumnObject H, String file){
-		
+			
 		int j = 0;
 		try(BufferedWriter bw = new BufferedWriter(new FileWriter(file)))
 		{
@@ -259,12 +253,12 @@ public class DancingLinks {
 			}
 			for (ArrayList<String> eC : exactCover(H)){
 				j += 1;
-				if(j%10000 ==0){
-				System.out.println(j);
+				//if(j%10000 ==0){
+				//System.out.println(j);
 				bw.write(j + " : ");
 				for(int v = 0; v<eC.size();v++){
 					bw.write(eC.get(v));
-				}
+				//}
 				bw.write(t_set + "]"); 
 				bw.newLine();
 						
@@ -289,7 +283,7 @@ public class DancingLinks {
 		int res = 0;
 		
 		if(H.R == H){
-			return 0;
+			return 1;
 		}
 		else{
 			
@@ -306,14 +300,10 @@ public class DancingLinks {
 			coverColumn(x);
 			
 			for(DataObject t = x.U; t != x; t = t.U){
-				String t_set = "[" + x.N;
 				for(DataObject y = t.L; y != t; y = y.L){
 					coverColumn(y.C);
-					if(!(y.C.N.equals("control_key"))){
-						t_set = t_set + ", " + y.C.N;
-					}
 				}
-				res += exactCover(H).size();
+				res += exactCover_count(H);
 				for(DataObject y = t.R; y != t; y = y.R){
 					uncoverColumn(y.C);
 				}
@@ -333,7 +323,7 @@ public class DancingLinks {
 		int[][] A_3 = {{1,1},{1,0},{0,1}};
 		int[][] A_4 = {{0,0,1,0,1,1,0},{1,0,0,1,0,0,1},{0,1,1,0,0,1,0},{1,0,0,1,0,0,0},{0,1,0,0,0,0,1},{0,0,0,1,1,0,1}, {1,1,0,1,0,0,1}, {0,1,1,0,1,1,0}};
 		int[][] A_5 = {{0,1,0},{1,0,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1}};
-		ColumnObject A = eC2dL(A_5);
+		ColumnObject A = cM2dL(A_5);
 		ArrayList<ArrayList<String>> res = exactCover(A);
 		for (ArrayList<String> s : res){
 			System.out.println(" ");
@@ -349,14 +339,14 @@ public class DancingLinks {
 
 			int[][] A = MatrixSet.allSubsets(n);
 			System.out.println(A.length);
-			ColumnObject H = eC2dL(A);
+			ColumnObject H = cM2dL(A);
 			System.out.println(Arrays.deepToString(A));
 			exactCover_write(H, "file3.txt");
 		}
 		
 		public static void test3(int n, int k){
 			int[][] A = MatrixSet.kSubsets(n,k);
-			ColumnObject H = eC2dL(A);
+			ColumnObject H = cM2dL(A);
 			System.out.println(Arrays.deepToString(A));
 			ArrayList<ArrayList<String>> res = exactCover(H);
 			int j = 1;

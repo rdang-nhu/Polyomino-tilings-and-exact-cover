@@ -133,7 +133,6 @@ public class ExactCover {
 	}
 	
 	public static void main(String[] args){
-		System.out.println((false) ? 1 : 0);
 		//test1();
 		//test2(15);
 		//test3(4,2);
