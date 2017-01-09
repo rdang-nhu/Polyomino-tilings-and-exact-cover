@@ -323,7 +323,8 @@ public class DancingLinks {
 		int[][] A_3 = {{1,1},{1,0},{0,1}};
 		int[][] A_4 = {{0,0,1,0,1,1,0},{1,0,0,1,0,0,1},{0,1,1,0,0,1,0},{1,0,0,1,0,0,0},{0,1,0,0,0,0,1},{0,0,0,1,1,0,1}, {1,1,0,1,0,0,1}, {0,1,1,0,1,1,0}};
 		int[][] A_5 = {{0,1,0},{1,0,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1}};
-		ColumnObject A = cM2dL(A_5);
+		ColumnObject A = cM2dL(A_0);
+		System.out.println(exactCover_count(A));
 		ArrayList<ArrayList<String>> res = exactCover(A);
 		for (ArrayList<String> s : res){
 			System.out.println(" ");
@@ -335,13 +336,11 @@ public class DancingLinks {
 		
 	}
 	
-		public static void test2(int n){
+		public static void test_allSubsets(int n){
 
 			int[][] A = MatrixSet.allSubsets(n);
-			System.out.println(A.length);
 			ColumnObject H = cM2dL(A);
-			System.out.println(Arrays.deepToString(A));
-			exactCover_write(H, "file3.txt");
+			System.out.println(exactCover_count(H));
 		}
 		
 		public static void test3(int n, int k){
@@ -375,8 +374,9 @@ public class DancingLinks {
 			//toPrint.draw(10,10);
 	    }
 	public static void main(String[] args){
-		//test1();
-		test2polyomino(8,4);
+		test_allSubsets(3);
+		test1();
+		//test2polyomino(8,4);
 		//test3(10,5);
 	}
 	

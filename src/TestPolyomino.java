@@ -80,8 +80,8 @@ public class TestPolyomino {
     
     
     public static void main(String[] args){
-		test_rectangle(2, 5, 5, "reusable", "print");
-		//test_diagonal(4,4, "reusable", "number");
+		//test_rectangle(5, 5, 5, "reusable", "number");
+		test_diagonal(10,5, "reusable", "number");
 		//test_pyramide(6,6, "reusable", "number");
 		//test_cross(6,8, "reusable", "number");	
 	}
