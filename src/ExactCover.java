@@ -76,6 +76,26 @@ public class ExactCover {
 		}
 	}
 	
+	public static int exactCover_count(int[][] cM){
+		int res = 1;
+		
+		//Si la collection est vide il n'existe pas de couverture exacte du problème à partir de la collection, si l'ensemble est vide l'ensemble vide est une couverture exacte du problème
+		int n = cM.length;
+		if(n==0) return res;
+		int m = cM[0].length;
+		if(m==0) return res;
+
+		//On définit 2 files qui contiennent les éléments du tableau qui sont encore à explorer, et 2 compteurs qui les dénombres
+		int count_C = n;
+		int count_X = m;
+		
+		int[] remain_C = new int[n];
+		int[] remain_X = new int[m];
+		
+		res = exactCoverAux_count(cM, count_C, count_X, n, m, remain_C, remain_X);
+		return res;
+	}
+	
 	public static int exactCoverAux_count(int[][] cM, int count_C, int count_X, int n, int m, int[] remain_C, int[] remain_X){
 		int res = 0;
 		
@@ -123,25 +143,7 @@ public class ExactCover {
 		}
 	}
 	
-	public static int exactCover_count(int[][] cM){
-		int res = 1;
-		
-		//Si la collection est vide il n'existe pas de couverture exacte du problème à partir de la collection, si l'ensemble est vide l'ensemble vide est une couverture exacte du problème
-		int n = cM.length;
-		if(n==0) return res;
-		int m = cM[0].length;
-		if(m==0) return res;
 
-		//On définit 2 files qui contiennent les éléments du tableau qui sont encore à explorer, et 2 compteurs qui les dénombres
-		int count_C = n;
-		int count_X = m;
-		
-		int[] remain_C = new int[n];
-		int[] remain_X = new int[m];
-		
-		res = exactCoverAux_count(cM, count_C, count_X, n, m, remain_C, remain_X);
-		return res;
-	}
 	
 	public static int first_def_elem(int[] A){
 		int n = A.length;
@@ -157,14 +159,14 @@ public class ExactCover {
 	public static void test1(){
 		int[][] A = {{0,0,1,0,1,1,0},{1,0,0,1,0,0,1},{0,1,1,0,0,1,0},{1,0,0,1,0,0,0},{0,1,0,0,0,0,1},{0,0,0,1,1,0,1}};
 		System.out.println(exactCover_count(A));
-//		ArrayList<List<Integer>> res = exactCover(A);
-//		for (List<Integer> s : res){
-//			System.out.println(" ");
-//			System.out.print("newcover composed of sets ");
-//			for(Integer i : s){
-//				System.out.print(i + " ");
-//			}
-//		}
+		ArrayList<List<Integer>> res = exactCover(A);
+		for (List<Integer> s : res){
+			System.out.println(" ");
+			System.out.print("newcover composed of sets ");
+			for(Integer i : s){
+				System.out.print(i + " ");
+			}
+		}
 	}
 	
 	//Test avec l'ensemble des sous-ensembles de {1,...,n}
@@ -185,7 +187,7 @@ public class ExactCover {
 	
 	//Test avec l'ensemble des sous-ensembles de taille k de {1,..,n}
 	
-	public static void test3(int n, int k){
+	public static void testkSubsets(int n, int k){
 		int[][] A = MatrixSet.kSubsets(n , k);
 		System.out.println(Arrays.deepToString(A));
 //		ArrayList<List<Integer>> res = exactCover(A);
@@ -201,7 +203,7 @@ public class ExactCover {
 	public static void main(String[] args){
 		test1();
 		test_allSubsets(6);
-		//test3(4,2);
+		//testkSubsets(4,2);
 		
 	}
 }

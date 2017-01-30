@@ -225,6 +225,54 @@ public class DancingLinks {
 
 	}
 	
+	public static ArrayList<ArrayList<String>> exactCover_one(ColumnObject H){
+		
+		ArrayList<ArrayList<String>> res = new ArrayList<ArrayList<String>>();
+		
+		if(H.R == H){
+			ArrayList<String> empty_list = new ArrayList<String>();
+			res.add(empty_list);
+			return res;
+		}
+		else{
+			
+			//Sélection de la colonne avec x.S minimal
+			ColumnObject x = (ColumnObject)H.R;
+			int counter = 0;
+			for(ColumnObject c_pointer = x; c_pointer != H; c_pointer = (ColumnObject)c_pointer.R){
+				if(c_pointer.S > counter){
+					x = c_pointer;
+					counter = c_pointer.S;
+				}
+			}
+			
+			coverColumn(x);
+			
+			for(DataObject t = x.U; t != x; t = t.U){
+				String t_set = "[" + x.N;
+				for(DataObject y = t.L; y != t; y = y.L){
+					coverColumn(y.C);
+					if(!(y.C.N.equals("control_key"))){
+						t_set = t_set + ", " + y.C.N;
+					}
+				}
+				if (!exactCover(H).isEmpty()){
+					ArrayList<String> res_= exactCover(H).get(0);
+					res_.add(t_set + "]");
+					res.add(res_);
+					return res;
+				}
+				for(DataObject y = t.R; y != t; y = y.R){
+					uncoverColumn(y.C);
+				}
+			}
+			uncoverColumn(x);
+			
+			return res;
+		}
+
+	}
+	
 	public static void exactCover_write(ColumnObject H, String file){
 			
 		int j = 0;
@@ -258,11 +306,10 @@ public class DancingLinks {
 				bw.write(j + " : ");
 				for(int v = 0; v<eC.size();v++){
 					bw.write(eC.get(v));
-				//}
-				bw.write(t_set + "]"); 
+				}
 				bw.newLine();
 						
-					}}
+					}
 			for(DataObject y = t.R; y != t; y = y.R){
 				uncoverColumn(y.C);
 			}
@@ -318,11 +365,6 @@ public class DancingLinks {
 	
 	public static void test1(){
 		int[][] A_0 = {{0,0,1,0,1,1,0},{1,0,0,1,0,0,1},{0,1,1,0,0,1,0},{1,0,0,1,0,0,0},{0,1,0,0,0,0,1},{0,0,0,1,1,0,1}};
-		int[][] A_1 = {{1,0,0},{0,1,1},{0,0,1}};
-		int[][] A_2 = {{1}};
-		int[][] A_3 = {{1,1},{1,0},{0,1}};
-		int[][] A_4 = {{0,0,1,0,1,1,0},{1,0,0,1,0,0,1},{0,1,1,0,0,1,0},{1,0,0,1,0,0,0},{0,1,0,0,0,0,1},{0,0,0,1,1,0,1}, {1,1,0,1,0,0,1}, {0,1,1,0,1,1,0}};
-		int[][] A_5 = {{0,1,0},{1,0,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1}};
 		ColumnObject A = cM2dL(A_0);
 		System.out.println(exactCover_count(A));
 		ArrayList<ArrayList<String>> res = exactCover(A);
@@ -343,7 +385,7 @@ public class DancingLinks {
 			System.out.println(exactCover_count(H));
 		}
 		
-		public static void test3(int n, int k){
+		public static void testkSubsets(int n, int k){
 			int[][] A = MatrixSet.kSubsets(n,k);
 			ColumnObject H = cM2dL(A);
 			System.out.println(Arrays.deepToString(A));
@@ -359,25 +401,11 @@ public class DancingLinks {
 			}
 		}
 	
-		static void test2polyomino(int n, int k){
-	    	Polyomino p = new Polyomino();
-	    	for(int i = 0; i < n; i++){
-	    		for(int j = 0; j < n; j++){
-	    			int[] a = {i,i/2+j};
-	    			p.cases.add(a);
-	    		}
-	    	}
-	    	
-			PolyominoList l = PolyominoList.fixedPolyomino(k);
-			//PolyominoTilings toPrint = new PolyominoTilings(p,l);
-			
-			//toPrint.draw(10,10);
-	    }
 	public static void main(String[] args){
 		test_allSubsets(3);
 		test1();
 		//test2polyomino(8,4);
-		//test3(10,5);
+		//testkSubsets(10,5);
 	}
 	
 	

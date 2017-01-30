@@ -9,6 +9,9 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 	ArrayList<ArrayList<String>> res;
 	int counter;
 	
+	PolyominoTilings(){
+		
+	}
 	
     PolyominoTilings(Polyomino p, PolyominoList l, String problem_type, String result_type){
     	
@@ -19,8 +22,8 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     	//result_type définit la forme du résultat renvoyé : print : affichage graphique des solutions
     	//													 number : retourne le nombre de pavage
     	//													 autre : on suppose que l'on veut enregistrer le résultat et que result_type indique le fichier
-    	
-    	
+    	//													 return : on enregistre simplement les solutions calculées dans l'objet PolyominoTillings créé
+    	//													 one : on affiche une seule solution au problème de couverture exacte
     	super();
     	
 		boolean not_reusable = (problem_type.equals("once") || problem_type.equals("all_once"));
@@ -30,6 +33,18 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     	
     	if (result_type == "print"){
     		this.res = DancingLinks.exactCover(H);
+    		for (List<String> s : this.res){
+    			PolyominoList pl = new PolyominoList();
+    			for(String i : s){
+    				pl.add(new Polyomino(i));
+    			}
+    			this.add(pl);
+    		}
+    		this.draw(10,15);
+    	}
+    	
+    	else if(result_type == "return"){
+    		this.res = DancingLinks.exactCover(H);
     		for (List<String> s : res){
     			PolyominoList pl = new PolyominoList();
     			for(String i : s){
@@ -37,13 +52,37 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     			}
     			this.add(pl);
     		}
-    		this.draw(10,10);
     	}
+    	
     	else if (result_type == "number"){
     		this.counter = DancingLinks.exactCover_count(H);
-    		System.out.println(this.counter);
+    		//System.out.println(this.counter);
     	}
-    	else{
+    	
+    	else if (result_type == "print_one"){
+    		this.res = DancingLinks.exactCover_one(H);
+    		for (List<String> s : this.res){
+    			PolyominoList pl = new PolyominoList();
+    			for(String i : s){
+    				pl.add(new Polyomino(i));
+    			}
+    			this.add(pl);
+    		}
+    		this.draw(10,15);
+    	}
+    	
+    	else if(result_type == "return_one"){
+    		this.res = DancingLinks.exactCover_one(H);
+    		for (List<String> s : res){
+    			PolyominoList pl = new PolyominoList();
+    			for(String i : s){
+    				pl.add(new Polyomino(i));
+    			}
+    			this.add(pl);
+    		}
+    	}
+    	
+       	else{
     		DancingLinks.exactCover_write(H, result_type);
     	}
     }
@@ -93,13 +132,13 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 			name[i] = "control_key";
 		}
 		
-
 		
 		//Conversion de l'ArrayList<int[]> en int[][], format utilisé pour le problème de couverture exacte
 		int[][] cM = Utils.convertA2M(matriceCouv);
 		
 		//Création de l'objet associé au problème de couverture exacte
 		ColumnObject H = DancingLinks.cM2dL(cM, name);
+		//Utils.print_asMatrix(cM);
 		
 		return H;
 	}
@@ -135,12 +174,31 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 			j++;
 		}
     }
+    
+    public void register(String file){
+    	try(BufferedWriter bw = new BufferedWriter(new FileWriter(file)))
+		{int j = 1;
+		for (PolyominoList s : this){
+			bw.write(j + " :"); 
+			for(Polyomino i : s){
+				bw.write("[");
+				bw.write(i.toString());
+				bw.write("]");
+			}
+			bw.newLine();
+			j++;
+		}}
+		catch (IOException e) {
+
+			e.printStackTrace();
+		
+		}
+
+	}
+    
+    
 
 	// Je passe la méthode en dynamique pour rester proche du paradigme objet, PolyominoTilings devient un constructeur
 
     
-	public static void main(String[] args){
-		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
-		
-	}
 }	

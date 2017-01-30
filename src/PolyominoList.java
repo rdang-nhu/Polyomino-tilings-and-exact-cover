@@ -166,11 +166,10 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 
 	
 	public static void main(String[] args){
-		test1();
+		//test1();
 		//PolyominoList resultat = fixedPolyomino(3);
+		//resultat.draw(10, 10);
 		
-
-		//resultat.draw(10, 5);
 		
 	}
 }

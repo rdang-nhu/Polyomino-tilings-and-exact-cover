@@ -15,6 +15,15 @@ public class Utils {
 		return cM;
 	}
 	
+	public static void print_asMatrix(int[][] matrix){
+		for (int i = 0; i < matrix.length; i++) {
+		    for (int j = 0; j < matrix[i].length; j++) {
+		        System.out.print(matrix[i][j] + " ");
+		    }
+		    System.out.println();
+		}
+	}
+	
 	public static String CoordinateStandardization(String entry){
 		//Convertit un string (généralement convertit via la méthode Arrays.toString() avec le format [a, b] en string au format (a,b) qui correspond au format proposé par l'énoncé
 		entry = entry.replaceFirst(" ", "");

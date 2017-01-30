@@ -90,6 +90,17 @@ public class Polyomino{
 		return res;
 	}
 	
+	public static Polyomino clone(Polyomino p){
+		Polyomino res = new Polyomino();
+		for(int i = 0; i<p.cases.size();i++){
+			int x = p.cases.get(i)[0];
+			int y = p.cases.get(i)[1];
+			int[] aux = {x,y};
+			res.cases.add(aux);
+		}
+		return res;
+	}
+		
 	public static Polyomino copy(Polyomino p){
 		Polyomino res = new Polyomino();
 		for(int i = 0; i<p.cases.size();i++){
@@ -162,12 +173,21 @@ public class Polyomino{
 		}
 	}
 	
-	public void dilatation(int k){ //debile
+	public void dilatation(int k){ 
+		ArrayList<int[]> cases = new ArrayList<int[]>(); 
 		for(int i = 0; i < this.cases.size(); i++){
-			this.cases.get(i)[0] = k*this.cases.get(i)[0];
-			this.cases.get(i)[1] = k*this.cases.get(i)[0];
+			for(int j = 0; j < k; j++){
+				for(int l = 0; l<k; l++){
+					int[] coord = new int[2];
+					coord[0] = k*this.cases.get(i)[0]+ l;
+					coord[1] = k*this.cases.get(i)[1]+ j;
+					cases.add(coord);
+				}
+			}
 		}
+		this.cases=cases;		
 	}
+	
 	
 	public void symetrie_x(){
 		for(int i = 0; i < this.cases.size(); i++){
@@ -210,6 +230,7 @@ public class Polyomino{
 	
 	public static void test1(){
 		Polyomino p = new Polyomino("[(12,23),(45,600),(123,4500)]/n");
+		Polyomino p0 = new Polyomino("[(0,0),(0,1),(0,2),(2,0),(2,1),(2,2),(1,2),(3,2)]/n");
 		System.out.print(p.toString());
 	}
 	
