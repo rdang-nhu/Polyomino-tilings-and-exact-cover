@@ -1,13 +1,13 @@
 import java.util.*;
 
 public class Polyomino{
-	// un tuple est stocké comme un tableau de deux entiers
+	// un tuple est stockï¿½ comme un tableau de deux entiers
 	ArrayList<int[]> cases = new ArrayList<int[]>(); 
 	
-	// On ajoute également les cases_voisines (utilisé pour générer des polyominos)
+	// On ajoute ï¿½galement les cases_voisines (utilisï¿½ pour gï¿½nï¿½rer des polyominos)
 	ArrayList<int[]> casesVoisines;
 	
-	// Pour tester l'égalité, on garde en mémoire la case en bas à gauche en permanence
+	// Pour tester l'ï¿½galitï¿½, on garde en mï¿½moire la case en bas ï¿½ gauche en permanence
 	Integer[] case0;
 	
 	// Constructeur de base
@@ -31,7 +31,7 @@ public class Polyomino{
 		this.case0 = res;
 	}
 	
-	// Création à partir d'une chaîne
+	// Crï¿½ation ï¿½ partir d'une chaï¿½ne
 	Polyomino(String s){ 
 		int i = 0;
 		int l = s.length();
@@ -56,8 +56,8 @@ public class Polyomino{
 					i++;
 					
 				}
-				int[] coordonnées = {Integer.parseInt(x),Integer.parseInt(y)}; //fonction qui convertit une chaîne en entier
-				cases.add(coordonnées);
+				int[] coordonnees = {Integer.parseInt(x),Integer.parseInt(y)}; //fonction qui convertit une chaï¿½ne en entier
+				cases.add(coordonnees);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public class Polyomino{
 		return res;
 	}
 	
-	// fonction qui compare 2 polyominos de même aire
+	// fonction qui compare 2 polyominos de mï¿½me aire
 	public boolean isEqualFixed(Polyomino p){
 		p.computeCase0();
 		this.computeCase0();
@@ -140,21 +140,36 @@ public class Polyomino{
 	public boolean isEqualFree(Polyomino p){
 		
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
 		
 		p.symetrie_x();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
+		p.symetrie_x();
+		return false;
+	}
+	
+	public boolean isEqualOneSided(Polyomino p){
+		
+		if(this.isEqualFixed(p)) return true;
+		p.rotation();
+		if(this.isEqualFixed(p)) return true;
+		p.rotation();
+		if(this.isEqualFixed(p)) return true;
+		p.rotation();
+		if(this.isEqualFixed(p)) return true;
+		p.rotation();
+		
 		return false;
 	}
 	
@@ -191,7 +206,7 @@ public class Polyomino{
 	
 	public void symetrie_x(){
 		for(int i = 0; i < this.cases.size(); i++){
-			this.cases.get(i)[0] = -this.cases.get(i)[0];
+			this.cases.get(i)[1] = -this.cases.get(i)[1];
 		}
 	}
 	
@@ -236,7 +251,7 @@ public class Polyomino{
 	
 	
 	public static void main(String[] args){
-		//test1(); //à commenter pour éviter d'avoir toujours le résultat
+		//test1(); //ï¿½ commenter pour ï¿½viter d'avoir toujours le rï¿½sultat
 		
 	}
 }
