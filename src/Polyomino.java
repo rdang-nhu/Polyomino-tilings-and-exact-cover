@@ -2,33 +2,29 @@ import java.util.*;
 
 public class Polyomino{
 	// un tuple est stocké comme un tableau de deux entiers
-	ArrayList<int[]> cases = new ArrayList<int[]>(); 
+	ArrayList<Square> cases = new ArrayList<Square>(); 
 	
 	// On ajoute également les cases_voisines (utilisé pour générer des polyominos)
-	ArrayList<int[]> casesVoisines;
-	
-	// Pour tester l'égalité, on garde en mémoire la case en bas à gauche en permanence
-	Integer[] case0;
+	ArrayList<Square> cVNI;
+	ArrayList<Square> cVI;
+	// Pour tester l'égalité, on garde en mémoire la case en bas à gauche (ordre lexicographique) en permanence
+	Square case0;
 	
 	// Constructeur de base
 	Polyomino(){
-		cases = new ArrayList<int[]>();
-		casesVoisines = new ArrayList<int[]>();
-		case0 = new Integer[2];
+		cases = new ArrayList<Square>();
+		cVNI = new ArrayList<Square>();
+		cVI = new ArrayList<Square>();
+		case0 = new Square(0,0);
 	}
 	
 	public void computeCase0(){
-		Integer[] res = new Integer[2];
-		res[0] = cases.get(0)[0];
-		res[1] = cases.get(0)[1];
-		for(int i = 0; i < cases.size(); i++){
-			int[] a = cases.get(i);
-			if((a[1] < res[1]) || (a[1]==res[1] && a[0]<res[0])){
-				res[0] = a[0];
-				res[1] = a[1];
+		case0 = cases.get(0);
+		for(Square a : cases){
+			if(case0.isStrictlySuperior(a)){
+				case0 = a.copy();
 			}
 		}
-		this.case0 = res;
 	}
 	
 	// Création à partir d'une chaîne
@@ -56,34 +52,38 @@ public class Polyomino{
 					i++;
 					
 				}
-				int[] coordonnées = {Integer.parseInt(x),Integer.parseInt(y)}; //fonction qui convertit une chaîne en entier
-				cases.add(coordonnées);
+				Square c = new Square(Integer.parseInt(x),Integer.parseInt(y)); //fonction qui convertit une chaîne en entier
+				cases.add(c);
 			}
 		}
 	}
 	
-	public boolean contains(int[] coord, int[] caseTest){
+	public boolean contains(Square c, int[] translation){
 		boolean res = false;
-		for(int i = 0; i < cases.size(); i++){
-			if(cases.get(i)[0] == coord[0]+caseTest[0] && cases.get(i)[1] == coord[1]+caseTest[1]){
+		for(Square a : cases){
+			if(a.getX() == c.getX()+translation[0] && a.getY() == c.getY()+translation[1]){
 				res = true;
 			}
 		}
 		return res;
 	}
 	
-	public boolean contains(Polyomino l, int[] caseTest){ // sert dans fixedPolyominoTilings
-		for(int i = 0; i < l.cases.size(); i++){
-			if(! this.contains(l.cases.get(i), caseTest) ) return false;
+	public boolean contains(Polyomino l, int[] translation){ // sert dans fixedPolyominoTilings
+		for(Square a : l.cases){
+			if(! this.contains(a, translation) ) return false;
 		}
 		return true;
 	}
 	
-	public boolean vContains(int[] coord){
+	public boolean vContains(Square c){
 		boolean res = false;
-		for(int i = 0; i < casesVoisines.size(); i++){
-			
-			if(casesVoisines.get(i)[0] == coord[0] && casesVoisines.get(i)[1] == coord[1]){
+		for(Square a : cVNI){
+			if(a.isEqual(c)){
+				res = true;
+			}
+		}
+		for(Square a : cVI){
+			if(a.isEqual(c)){
 				res = true;
 			}
 		}
@@ -92,20 +92,11 @@ public class Polyomino{
 	
 	public static Polyomino copy(Polyomino p){
 		Polyomino res = new Polyomino();
-		for(int i = 0; i<p.cases.size();i++){
-			int x = p.cases.get(i)[0];
-			int y = p.cases.get(i)[1];
-			int[] aux = {x,y};
+		for(Square a : p.cases){
+			Square aux = a.copy();
 			res.cases.add(aux);
 		}
-		for(int i = 0; i<p.casesVoisines.size();i++){
-			int x = p.casesVoisines.get(i)[0];
-			int y = p.casesVoisines.get(i)[1];
-			int[] aux = {x,y};
-			res.casesVoisines.add(aux);
-		}
-		res.case0[0] = p.case0[0];
-		res.case0[0] = p.case0[0];
+		res.case0 = p.case0.copy();
 		return res;
 	}
 	
@@ -114,10 +105,8 @@ public class Polyomino{
 		p.computeCase0();
 		this.computeCase0();
 		boolean res = true;
-		for(int i = 0; i < p.cases.size(); i++){
-			int[] a = new int[2];
-			a[0] = p.cases.get(i)[0] - p.case0[0] + this.case0[0];
-			a[1] = p.cases.get(i)[1] - p.case0[1] + this.case0[1];
+		for(Square c : p.cases){
+			Square a = new Square(c.getX() - p.case0.getX() + this.case0.getX(),c.getY() - p.case0.getY() + this.case0.getY());
 			int[] caseTest = {0,0};
 			if (! this.contains(a, caseTest)){
 				res = false;
@@ -129,68 +118,66 @@ public class Polyomino{
 	public boolean isEqualFree(Polyomino p){
 		
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
 		
 		p.symetrie_x();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
-		rotation();
+		p.rotation();
 		if(this.isEqualFixed(p)) return true;
+		p.symetrie_x();
 		return false;
 	}
 	
 	public void translater(int x, int y){
-		for(int l = 0; l < this.cases.size(); l++){
-			this.cases.get(l)[0] += x;
-			this.cases.get(l)[1] += y;
+		for(Square a : cases){
+			a.squareX(a.getX()+x);
+			a.squareY(a.getY()+y);
 		}
 	}
 	
 	public void rotation(){ //quart de tour sens trigo
-		for(int i = 0; i < this.cases.size(); i++){
-			int u =  this.cases.get(i)[0];
-			this.cases.get(i)[0] = -this.cases.get(i)[1];
-			this.cases.get(i)[1] = u;
+		for(Square a : cases){
+			int u = a.getX();
+			a.squareX(-a.getY());
+			a.squareY(u);
 		}
 	}
-	
-	public void dilatation(int k){ //debile
-		for(int i = 0; i < this.cases.size(); i++){
-			this.cases.get(i)[0] = k*this.cases.get(i)[0];
-			this.cases.get(i)[1] = k*this.cases.get(i)[0];
+	public void rotation2(){ //quart de tour sens trigo
+		for(Square a : cases){
+			int u = -a.getX();
+			a.squareX(a.getY());
+			a.squareY(u);
 		}
 	}
 	
 	public void symetrie_x(){
-		for(int i = 0; i < this.cases.size(); i++){
-			this.cases.get(i)[0] = -this.cases.get(i)[0];
+		for(Square a : cases){
+			a.squareX(-a.getX());
 		}
 	}
 	
 	public void symetrie_y(){
-		for(int i = 0; i < this.cases.size(); i++){
-			this.cases.get(i)[1] = -this.cases.get(i)[1];
+		for(Square a : cases){
+			a.squareY(-a.getY());
 		}
 	}
 	
 	@Override
-	
-	
-	
+
 	public String toString(){
 		String s = "";
-		for(int j = 0; j < this.cases.size(); j++){
-			int[] pr = this.cases.get(j);
-			s += "("+pr[0]+",";
-			s += pr[1]+")";
+		for(Square a : cases){
+			s += "("+a.getX()+",";
+			s += a.getY()+")";
 		}
 		s += "\n";
 		return s;
@@ -198,10 +185,9 @@ public class Polyomino{
 	
 	public void printCasesV(){
 		String s = "";
-		for(int j = 0; j < this.casesVoisines.size(); j++){
-			int[] pr = this.casesVoisines.get(j);
-			s += "("+pr[0]+",";
-			s += pr[1]+")";
+		for(Square a : cVNI){
+			s += "("+a.getX()+",";
+			s += a.getY()+")";
 		}
 		s += "\n";
 		System.out.print(s);
@@ -215,7 +201,7 @@ public class Polyomino{
 	
 	
 	public static void main(String[] args){
-		//test1(); //à commenter pour éviter d'avoir toujours le résultat
+		test1(); 
 		
 	}
 }

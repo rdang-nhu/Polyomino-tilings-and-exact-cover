@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.io.BufferedReader;
 
 public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les exceptions en cas de non-lecture du fichier
-	static int[] caseUtile = {0,0};
+	static Square case0 = new Square(0,0);
+	static int[] case1 = {0,0};
 	
 	PolyominoList(String nom){
 		super();
@@ -32,17 +33,16 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 			// Pour chaque Polyomino de la liste
 			Random c = new Random();
 			Polyomino a = this.get(i);
-			a.translater(taille+(g*taille*i)%1250/g, taille+taille*(g*taille*i/1250));
+			a.translater(taille/2+(g*taille*i)%1250/g, 1+taille*(g*taille*i/1250));
 			
 			
 			Color couleur = Color.getHSBColor(c.nextFloat() ,1,1);
 					
 			
-			for(int j = 0; j < a.cases.size(); j++){
+			for(Square j : a.cases){
 				//on récupère tous les carrés et on les dessine de cette couleur
-				int[] carré = a.cases.get(j);
-				int x = carré[0];
-				int y = carré[1];
+				int x = j.getX();
+				int y = j.getY();
 				int x1 = g * x;  
 				int y1 = g * y;
 				int[] xc = {x1,x1,x1+g,x1+g};
@@ -55,7 +55,6 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 	public void draw(int taille, int g){ 
 		// L'argument taille est l'écart entre les polyominos
 		// g est le facteur de dilatation
-		// début est la case à partir de laquelle on commence
 		
 		Image2d img = new Image2d(1300,500); 
 		
@@ -80,16 +79,12 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 		if(area == 1){
 			PolyominoList resultat = new PolyominoList();
 			Polyomino a = new Polyomino();
-			int[] case1 = {0,0};
-			int[] case2 = {0,1};
-			int[] case3 = {1,0};
-			int[] case4 = {-1,0};
-			int[] case5 = {0,-1};
+			Square case1 = new Square(0,0);
+			Square case2 = new Square(0,1);
+			Square case3 = new Square(1,0);
 			a.cases.add(case1);
-			a.casesVoisines.add(case2);
-			a.casesVoisines.add(case3);
-			a.casesVoisines.add(case4);
-			a.casesVoisines.add(case5);
+			a.cVNI.add(case2);
+			a.cVNI.add(case3);
 			resultat.add(a);
 			return resultat;
 		}
@@ -97,46 +92,68 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 		PolyominoList resultat = new PolyominoList();
 		PolyominoList rec = fixedPolyomino(area-1);
 		for(int i = 0; i < rec.size(); i++){
+			
+			
 			Polyomino p = rec.get(i);
-			for(int j = 0; j < p.casesVoisines.size(); j++){
+			ArrayList<Square> cVI = new ArrayList<Square>();
+			ArrayList<Square> cVNI = new ArrayList<Square>();
+			// On recopie p.cVNI et p.cI
+			for(Square j : p.cVNI){
+				Square c = j.copy();
+				cVNI.add(c);
+			}
+			for(Square j : p.cVI){
+				Square c = j.copy();
+				cVI.add(c);
+			}
+			
+			for(Square j : p.cVNI){
+				// On ajoute la case voisine au cases interdites
+				Square aux  = j.copy();
+				cVI.add(aux);
+				cVNI.remove(0);
 				
 				// On copie p
 				Polyomino a = Polyomino.copy(p);
 				// on ajoute la case voisine choisie
-				a.cases.add(p.casesVoisines.get(j));
+				Square aux2 = j.copy();
+				a.cases.add(aux2);
+
+				// On met à jour les CVNI
+				for(Square k : cVNI){
+					Square c = k.copy();
+					a.cVNI.add(c);
+				}
 				
-				//On enlève la case voisine indexée par j
-				a.casesVoisines.remove(j);
+				// On met à jour les CI
+				for(Square k : cVI){
+					Square c = k.copy();
+					a.cVI.add(c);
+				}
 				
 				// On ajoute les nouvelles cases voisines, en évitant de prendre une case déjà occupée
-				int x = p.casesVoisines.get(j)[0];
-				int y = p.casesVoisines.get(j)[1];
-				int[] v1 = {x+1,y};
-				int[] v2 = {x,y+1};
-				int[] v3 = {x-1,y};
-				int[] v4 = {x,y-1};
+				int x = aux.getX();
+				int y = aux.getY();
+				Square v1 = new Square(x+1,y);
+				Square v2 = new Square(x,y+1);
+				Square v3 = new Square(x-1,y);
+				Square v4 = new Square(x,y-1);
 				
-				if(! a.contains(v1, caseUtile) && ! a.vContains(v1)){
-					a.casesVoisines.add(v1);
+				if(! a.contains(v1, case1) && ! a.vContains(v1)){
+					a.cVNI.add(v1);
 				}
-				if(! a.contains(v2, caseUtile) && ! a.vContains(v2)){
-					a.casesVoisines.add(v2);
+				if(! a.contains(v2, case1) && ! a.vContains(v2)){
+					a.cVNI.add(v2);
 				}
-				if(! a.contains(v3, caseUtile) && ! a.vContains(v3)){
-					a.casesVoisines.add(v3);
+				if(v3.isStrictlySuperior(case0) && ! a.contains(v3, case1) && ! a.vContains(v3)){
+					a.cVNI.add(v3);
 				}
-				if(! a.contains(v4, caseUtile) && ! a.vContains(v4)){
-					a.casesVoisines.add(v4);
+				if(v4.isStrictlySuperior(case0) && ! a.contains(v4, case1) && ! a.vContains(v4)){
+					a.cVNI.add(v4);
 				}
 				
 				// on vérifie que res ne contient pas déjà le polyomino
-				boolean verif = true;
-				for(int l = 0; l < resultat.size(); l++){
-					if(a.isEqualFixed(resultat.get(l))){
-						verif = false;
-					}
-				}
-				if(verif == true) resultat.add(a);
+				resultat.add(a);
 			}
 		}
 	return resultat;
@@ -166,11 +183,11 @@ public class PolyominoList extends ArrayList<Polyomino>{ //ne gère pas les excep
 
 	
 	public static void main(String[] args){
-		test1();
-		//PolyominoList resultat = fixedPolyomino(3);
-		
-
-		//resultat.draw(10, 5);
-		
+		long debut = System.currentTimeMillis();
+		PolyominoList resultat = fixedPolyomino(11);
+		System.out.println(resultat.size());
+		long fin = System.currentTimeMillis();
+		System.out.print((fin-debut)/1000.);
+		resultat.draw(7,1);		
 	}
 }

@@ -8,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 
-
-
 public class DancingLinks {
 	static Charset utf8 = StandardCharsets.UTF_8;
 	
@@ -212,6 +210,7 @@ public class DancingLinks {
 				String t_set = "[" + x.N;
 				for(DataObject y = t.L; y != t; y = y.L){
 					coverColumn(y.C);
+					t_set = t_set + ", " + y.C.N;
 					if(!(y.C.N.equals("control_key"))){
 						t_set = t_set + ", " + y.C.N;
 					}

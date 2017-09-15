@@ -170,7 +170,7 @@ public class PolyominoTilings_once extends ArrayList<PolyominoList>{
 	public static void main(String[] args){
 		//test2(10, 5);
 		//test3(3);
-		test4(6, 4);
+		test2(5, 4);
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		
 	}

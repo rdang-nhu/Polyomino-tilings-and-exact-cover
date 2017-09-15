@@ -12,36 +12,18 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     PolyominoTilings(Polyomino p, PolyominoList l){
     	super();
     	this.H = fixedPolyominoTilings(p,l);
-    	//System.out.println(((ColumnObject)H.R).S);
-    	System.out.println("DancingLinks problème identifié");
-		//this.res = DancingLinks.exactCover(H);
-    	DancingLinks.exactCover_write(H);
-		
-//		int j = 0;
-//		try(BufferedWriter bw = new BufferedWriter(new FileWriter("file3.txt")))
-//		{for (List<String> s : res){
-//			bw.write("La " + j + " ème couverture composée des ensembles : ");
-//			for(String i : s){
-//				bw.write(i); ;
-//				}
-//			bw.newLine();
-//			j += 1;
-//			//if (j%100 == 0) System.out.println(j);
-//		}
-//		}
-//		catch (IOException e) {
-//
-//			e.printStackTrace();
-//		
-//		}
-//		
-//		for (List<String> s : res){
-//			PolyominoList pl = new PolyominoList();
-//			for(String i : s){
-//				pl.add(new Polyomino(i));
-//			}
-//			this.add(pl);
-//		}
+    	
+    	// Attention à ne supprimer le code qui résout le problème, il vaut mieux mettre ça ailleurs
+    	// DancingLinks.exactCover_write(H);
+    	
+		this.res = DancingLinks.exactCover(H);
+		for (List<String> s : res){
+			PolyominoList pl = new PolyominoList();
+			for(String i : s){
+				pl.add(new Polyomino(i));
+			}
+			this.add(pl);
+		}
     }
     
 	public static ColumnObject fixedPolyominoTilings(Polyomino p, PolyominoList l){
@@ -53,7 +35,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 			Polyomino test = l.get(i);
 			for(int j = 0; j < p.cases.size(); j++){
 				int[] ligne = new int[p.cases.size()];
-				int[] caseTest = p.cases.get(j);
+				Square caseTest = p.cases.get(j);
 				if(p.contains(test,caseTest)){
 					for(int k = 0; k < p.cases.size(); k++){
 						 int[] case2 = new int[2];
@@ -143,8 +125,9 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     
     static void test2(int n, int k){
     	Polyomino p = new Polyomino();
-    	for(int i = 0; i < n; i++){
-    		for(int j = 0; j < n; j++){
+    	for(int i = 0; i <6; i++){
+    		int l = i%2;
+    		for(int j = 0; j < 5+l; j++){
     			int[] a = {i,i/2+j};
     			p.cases.add(a);
     		}
@@ -153,7 +136,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
 		PolyominoList l = PolyominoList.fixedPolyomino(k);
 		PolyominoTilings toPrint = new PolyominoTilings(p,l);
 		
-		//toPrint.draw(10,10);
+		toPrint.draw(10,10);
     }
     
     static void test3(int n){
@@ -186,7 +169,7 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     	}
     	PolyominoList l = PolyominoList.fixedPolyomino(k);
 		PolyominoTilings toPrint = new PolyominoTilings(p,l);
-		//toPrint.draw(10,10);
+		toPrint.draw(10,10);
     }
     
     static void test5(int n, int k){
@@ -210,9 +193,8 @@ public class PolyominoTilings extends ArrayList<PolyominoList>{
     
     
 	public static void main(String[] args){
-		//test2(5);
-		//test3(3);
-		test2(8,4);
+		test2(5,5);
+		// test2(8,4);
 		//System.out.println(CoordinateStandardization(Arrays.toString(p.cases.get(0))));
 		
 	}
